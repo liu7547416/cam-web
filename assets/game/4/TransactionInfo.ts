@@ -17,6 +17,7 @@ export class TransactionInfo extends Component {
     @property(Label)
     statusLabel: Label = null;
 
+
     itemInfo: any = null
 
     // 绿、金、亮蓝、玫红、青灰、橘红
@@ -44,23 +45,18 @@ export class TransactionInfo extends Component {
     setData(data: any){
         this.itemInfo = data;
         this.dateLabel.string = this.timestampToStr(data.create_time);
-        this.amountLabel.string = data.amount + ' BIXO';
-        let showStatus = i18n.t(`tx_type_${data.tx_type}`)
-        console.warn("trans status text:", showStatus)
+        if(parseFloat(data.amount)>0){
+            data.amount = '+' + data.amount
+        }
+        this.amountLabel.string = this.DecimalTwo(data.amount) + ' CORN';
+        this.statusLabel.getComponent("LocalizedLabel").key = `tx_type_${data.tx_type}`;
         var statusColor = this.TYPE_COLORS[parseInt(data.tx_type)-1];
-        this.statusLabel.string =   showStatus ? showStatus : '--';
         this.statusLabel.color = new Color(statusColor);
-        this.balanceLabel.string = data.balance + ' CORN';
-        // this.hashLabel.string =  data.tx_hash.slice(0, 10) + "***********"+ data.tx_hash.slice(0, 10)
+        this.balanceLabel.string = this.DecimalTwo(data.balance) + ' CORN';
     }
 
-    // touchCopy(){
-    //     navigator.clipboard.writeText(this.itemInfo.tx)
-    //     alert("已复制hash!")
-    // }
-
-    update(deltaTime: number) {
-        
+    DecimalTwo(num) {
+        return Math.trunc(num * 100) / 100;
     }
 }
 

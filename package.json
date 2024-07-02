@@ -1,17 +1,7 @@
 {
-  "name": "Tom&Jerry",
-  "uuid": "72861bcb-ce6c-4310-a320-9be22fce3e5f",
+  "name": "TomAndJerry",
+  "uuid": "a9f07a05-5029-41de-a69e-934b5e61699d",
   "creator": {
-    "version": "3.8.2",
-    "registry": {
-      "remote": {}
-    },
-    "dependencies": {
-      "plugin-import-2x": "1.1.10",
-      "localization-editor": "1.0.1"
-    }
-  },
-  "dependencies": {
-    "ethers": "^6.12.1"
+    "version": "3.8.2"
   }
 }

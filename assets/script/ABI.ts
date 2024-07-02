@@ -113,7 +113,7 @@ export var ABI = {
         "name": "approve",
         "outputs": [{
             "internalType": "bool",
-            "name": "",
+             "name": "",
             "type": "bool"
         }],
         "stateMutability": "nonpayable",

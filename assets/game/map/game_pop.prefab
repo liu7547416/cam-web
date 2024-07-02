@@ -365,7 +365,7 @@
     "_string": "",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 26,
+    "_actualFontSize": 28,
     "_fontSize": 28,
     "_fontFamily": "Arial",
     "_lineHeight": 30,
@@ -809,6 +809,7 @@
       "__id__": 0
     },
     "fileId": "69tF1GUzpPr6EnkeG1vEgT",
+    "instance": null,
     "targetOverrides": null
   }
 ]

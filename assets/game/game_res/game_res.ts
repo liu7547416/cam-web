@@ -52,12 +52,10 @@ export class game_res extends Component {
     showStatus(win: boolean, roomValue: number, roomId: number){
         this.win = win;
         this.roomValue = roomValue;
-        this.roomId = roomId - 1;
-        if(this.delay){
-            this.delay = false;
-            this.scheduleOnce(this.delayShow, 5)
-            return
-        }
+        this.roomId = roomId;
+        console.error(`玩家赢：${win} 击杀房间金额${roomValue}  房间号：${this.roomId}`)
+        this.delayShow()
+        this.scheduleOnce(this.delayShow, 3)
     }
 
     delayShow(){
@@ -67,12 +65,16 @@ export class game_res extends Component {
         if(this.win){
             this.winLayout.node.active = true;
             this.lostLayout.node.active = false;
-            this.winRoomLabel.string = i18n.t(''+ (this.roomId-1));
+            let roomName = i18n.t(''+ (this.roomId))
+            console.warn("赢了 房间：", roomName)
+            this.winRoomLabel.string = roomName;
             this.winValueLabel.string = '' + this.roomValue;
         }else{
             this.winLayout.node.active = false;
             this.lostLayout.node.active = true;
-            this.lostRoomLabel.string = i18n.t(''+ (this.roomId-1));
+            let roomName = i18n.t(''+ (this.roomId))
+            console.warn("输了 房间：", roomName)
+            this.lostRoomLabel.string = roomName;
             this.loseValueLabel.string = '' + this.roomValue;
         }
         this.updateLang()

@@ -1,4 +1,4 @@
-import { _decorator, Animation, AnimationClip, Component, Node, tween, Vec3, random, randomRange, CCInteger } from 'cc';
+import { _decorator, Animation, AnimationClip, Component, Node, tween, TweenSystem, director, Vec3, random, randomRange, CCInteger } from 'cc';
 const { ccclass, property } = _decorator;
 
 
@@ -55,7 +55,7 @@ export class myRole extends Component {
         new action(27, -152, -0.2, 0.2),
         new action(27, -262, -0.2, 0.2)
     ];
-    walkWashRoomPath: action[] = [
+    walkWaterRoomPath: action[] = [
         new action(176, -410, -0.2, 0.2),
         new action(176, -410, -0.2, 0.2),
         new action(176, -152, -0.2, 0.2),
@@ -63,7 +63,7 @@ export class myRole extends Component {
         new action(-242, -152, -0.2, 0.2),
         new action(-242, -232, -0.2, 0.2)
     ];
-    walkWaterRoomPath: action[] = [
+    walkWashRoomPath: action[] = [
         new action(176, -410, -0.2, 0.2),
         new action(176, -410, -0.2, 0.2),
         new action(176, -152, -0.2, 0.2),
@@ -166,6 +166,10 @@ export class myRole extends Component {
     roomId: number = -1;
     uid: number = 0
 
+    isEnter = false;
+
+    initPos = null;
+
     getUid(){
         return this.uid
     }
@@ -177,6 +181,7 @@ export class myRole extends Component {
     protected onLoad(): void {
         this.animation = this.node.getComponent(Animation)
         this.uid = Number(localStorage.getItem("user"))
+        
     }
 
     clean(){
@@ -186,15 +191,25 @@ export class myRole extends Component {
 
     backHall(){
         this.roomId = -1
-        let act = this.randomPosition()
-        this.node.position = new Vec3(act.x, act.y, this.node.position.z)
+        this.usePath = this.walkEnterPath;
+        this.isEnter = false;
+        // this.addRandomPosition()
+        let pos = new Vec3(this.usePath[this.usePath.length-1].x, this.usePath[this.usePath.length-1].y, this.node.position.z)
+        this.node.position = pos;
         this.animation.stop()
+        console.log("back hall!")
     }
 
 
     
 
     inRoom(roomId){
+        // if(this.walkIng){
+        //     this.animation.stop()
+        //     this.inRoom(roomId)
+        //     this.walkIng = false;
+        //     return
+        // }
         this.roomId = roomId;
         // 范围内 随机坐标
         let randomX = randomRange(-5, 5)
@@ -205,9 +220,11 @@ export class myRole extends Component {
         // 闪现至房间
         lastAct.x = lastAct.x + randomX
         lastAct.y = lastAct.y + randomY
+        director.getSystem(TweenSystem.ID).ActionManager.removeAllActionsFromTarget(this.node)
         this.node.position = new Vec3(lastAct.x, lastAct.y, this.node.position.z)
         console.error("前往坐标：",this.node.position, " roomId:",roomId)
         this.animation.stop()
+        
     }
 
 
@@ -222,46 +239,20 @@ export class myRole extends Component {
         // 闪现至房间
         lastAct.x = lastAct.x + randomX
         lastAct.y = lastAct.y + randomY
+        director.getSystem(TweenSystem.ID).ActionManager.removeAllActionsFromTarget(this.node)
         this.node.position = new Vec3(lastAct.x, lastAct.y, this.node.position.z)
         console.error("前往坐标：",this.node.position, " roomId:",roomId)
         this.animation.stop()
     }
 
-    inHall(){
-        let act = this.randomPosition()
-        this.node.position = new Vec3(act.x, act.y, this.node.position.z)
+
+    initPosition(){
+        if(!this.initPos) return
+        this.roomId = -1
+        this.isEnter = false;
+        this.node.setPosition(this.initPos)
     }
 
-
-    setToRoomPosition(roomId: number){
-        let walk_to_room = false;
-        if(this.roomId==-1){
-            walk_to_room = true;
-        }
-        if(this.roomId == roomId){ 
-            return console.log("roomId no change!")
-        }
-        //
-        this.roomId = roomId;
-        // 范围内 随机坐标偏移
-        let randomX = randomRange(-5, 5)
-        let randomY = randomRange(-5, 5)
-        // 修改最后点
-        let roomPathLength = this.toRooms[this.roomId].length
-        let lastAct = this.toRooms[this.roomId][roomPathLength - 1]
-        this.toRooms[this.roomId][roomPathLength - 1].x = lastAct.x + randomX
-        this.toRooms[this.roomId][roomPathLength - 1].y = lastAct.y + randomY
-        if(walk_to_room){
-            this.usePath = this.toRooms[this.roomId]
-            this.walk()
-        }else{
-            // 闪现至房间
-            lastAct.x = lastAct.x + randomX
-            lastAct.y = lastAct.y + randomY
-            this.node.position = new Vec3(lastAct.x, lastAct.y, this.node.position.z)
-            this.animation.stop()
-        }
-    }
 
 
     justSetRoomId(roomId){
@@ -272,61 +263,27 @@ export class myRole extends Component {
     setRoomId(roomId: number){
         this.roomId = roomId;
         this.usePath = this.toRooms[this.roomId]
-        this.usePath.push(this.randomPosition());
+        this.addRandomPosition();
         this.walk()
     }
 
-    reqEnterRoom(roomId: number){
-        // 获取当前轮信息
-        const formData = new FormData()
-        // formData.append("round", '' +0)
-        formData.append("uid", '' +this.uid)
-        // formData.append("chainid", "" + EthersUtils.ChainParams.ChainId)
-        let _headers = new Headers()
-        _headers.append("Content-Type", "multipart/form-data")
-        // this.showLoading(true)
-        fetch(this.URI + "/round/info", 
-            {method: "POST", 
-            mode: "cors", 
-            cache: "no-cache", 
-            body: formData
-        }).then((response: Response) => {
-            let res = response.text()
-            // console.info("rund info text:", res);
-            return res
-        }).then((value) => {
-            // this.showLoading(false)
-            let res = JSON.parse(value)
-            let data = res.data;
-            //
-            this.roomId = roomId;
-            this.usePath = this.toRooms[this.roomId]
-            console.log("this.usePath: ", this.usePath)
-            if(this.roomId!=-1){
-                let lastAction = this.usePath[this.usePath.length-1];
-                this.node.position = new Vec3(lastAction.x, lastAction.y, this.node.position.z)
-                console.log("切换房间")
-                this.animation.stop()
-            }else{
-                console.warn("首次进入，步行。")
-                this.walk()
-            }
-        }).catch(e=>{
-            //登陆失败UI弹窗
-            alert("进入房间失败！")
-            console.error("get round info error: ", e)
-        });
-    }
 
 
-    randomPosition(){
-        let minX=-232, minY=-412, widht=190, height=90;
-        let randomX = random() * widht,  randomY = random() * height,
-        x = minX + parseInt('' +randomX) , y = minY - parseInt('' +randomY);
-        let targetLR = x>this.walkEnterPath[1].x ? 0.2 : -0.2;
-        this.walkEnterPath[1].scaleX = targetLR;
-        let act = new action(x, y, targetLR, 0.2)
-        return act;
+    addRandomPosition(){
+        let lastPos = this.usePath[this.usePath.length-1]
+
+        let randomX = randomRange(-5, 5)
+        let randomY = randomRange(-5, 5)
+        let targetLR = lastPos.x>randomX ? 0.2 : -0.2
+        if(this.roomId==-1){
+            randomX = randomRange(-100, 100)
+            randomY = randomRange(-50, 50)
+            targetLR = randomX>0 ? 0.2 : -0.2
+        }
+        this.usePath[this.usePath.length-1].scaleX = targetLR;
+        this.usePath[this.usePath.length-1].x = this.usePath[this.usePath.length-1].x + randomX
+        this.usePath[this.usePath.length-1].y = this.usePath[this.usePath.length-1].y + randomY;
+        return this.usePath[this.usePath.length-1];
     }
 
 
@@ -335,17 +292,27 @@ export class myRole extends Component {
         this.animation = this.node.getComponent(Animation)
     }
 
+
     wallEnter(){
-        this.walkEnterPath.push(this.randomPosition());
+        if(this.isEnter){
+            return
+        }
+        this.isEnter = true;
+        console.error("my walk enter~!")
+        
         this.usePath = this.walkEnterPath;
+        // this.addRandomPosition();
+        let startPos = this.usePath[0]
+        this.node.setPosition(new Vec3(startPos.x, startPos.y, this.node.getPosition().z))
+        this.node.setScale(new Vec3(startPos.scaleX, startPos.scaleY, 0))
         this.walk()
     }
 
 
     enterGame(){
         this.uid = Number(localStorage.getItem("user"))
-        this.walkEnterPath.push(this.randomPosition());
         this.usePath = this.walkEnterPath;
+        // this.addRandomPosition();
         //
         if(this.currentPathIndex == 0){
             this.animation.play("walk")
@@ -353,17 +320,18 @@ export class myRole extends Component {
         // 
         const act = this.usePath[this.currentPathIndex];
         if(!act){
+            this.currentPathIndex = 0
             this.animation.stop()
             return
         }
         tween(this.node)
-            .to(1, { position: new Vec3(act.x, act.y, this.node.position.z)})
+            .to(this.stepSec, { position: new Vec3(act.x, act.y, this.node.position.z)})
             .call((userRole: Node)=>{
                 this.currentPathIndex++;
                 userRole.scale = new Vec3(act.scaleX, act.scaleY, 0);
                 // console.log("tween myRole pos:", userRole.position)
                 if(this.currentPathIndex == this.usePath.length){
-                    // console.error(">> animation done!")
+                    console.error(">> walk done!")
                     this.animation.stop()
                     // this.currentPathIndex = -1
                     // this.animation.play("killer_action")
@@ -382,9 +350,10 @@ export class myRole extends Component {
         }
         // 
         const act = this.usePath[this.currentPathIndex];
-        console.log("act: ", act, " idx:", this.currentPathIndex)
+        // console.log("act: ", act, " idx:", this.currentPathIndex)
         if(!act){
             this.currentPathIndex = 0
+            this.animation.stop()
             return
         }
         tween(this.node)
@@ -401,7 +370,6 @@ export class myRole extends Component {
                     this.walk()
                 }
             })
-            .union()
             .start()
     }
 

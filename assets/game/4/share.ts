@@ -18,7 +18,7 @@ export class share extends Component {
     }
 
     async clickShare(){
-        let herf = location.href;
+        let herf = location.host;
         let shareLink = herf + "?invite=" + localStorage.getItem("inviteCode")
         navigator.clipboard.writeText(shareLink);
         this.commonPop(i18n.t("share"))

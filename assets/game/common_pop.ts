@@ -7,8 +7,8 @@ export class common_pop extends Component {
     textLabel: Label = null;
 
     close(){
-        console.log(this)
-        console.log(this.textLabel)
+        // console.log(this)
+        // console.log(this.textLabel)
         this.textLabel.string = '';
         this.node.active=false;
     }

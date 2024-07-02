@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Color } from 'cc';
 import * as i18n from 'db://i18n/LanguageData';
 const { ccclass, property } = _decorator;
 
@@ -24,6 +24,9 @@ export class WithdrawItemInfo extends Component {
 
     txHash: string = ""
 
+    // 青灰、绿、玫红、金、亮蓝、橘红
+    TYPE_COLORS = ["#708090", "#5f9ea0", "#dda0dd", "#ffd700", "#add8e6", "#ff4500"]
+
 
     timestampToStr(timestamp) {
         var date = new Date(timestamp*1000);
@@ -33,14 +36,12 @@ export class WithdrawItemInfo extends Component {
         var hours = date.getHours();
         var minutes = date.getMinutes();
         var seconds = date.getSeconds();
-     
         // 补零操作
         let monthStr = month < 10 ? '0' + month : month;
         let dayStr = day < 10 ? '0' + day : day;
         let hoursStr = hours < 10 ? '0' + hours : hours;
         let minutesStr = minutes < 10 ? '0' + minutes : minutes;
         let secondsStr = seconds < 10 ? '0' + seconds : seconds;
-     
         return `${year}-${monthStr}-${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
     }
 
@@ -52,7 +53,17 @@ export class WithdrawItemInfo extends Component {
         this.actualAmountLabel.string = data.receive_amount + ' BIXO',
         this.txHash = data.tx_hash,
         this.hashLabel.string =  this.txHash ? data.tx_hash.slice(0, 10) + "***********"+ data.tx_hash.slice(0, 10) : '----';
-        this.statusLabel.string = i18n.t(`withdraw_${data.withdraw_status}`) ;
+        // console.warn("show status:", i18n.t(`withdraw_${data.withdraw_status}`))
+        
+        this.statusLabel.getComponent("LocalizedLabel").key = `withdraw_${data.withdraw_status}`;
+        var statusColor = this.TYPE_COLORS[parseInt(data.withdraw_status)];
+        console.warn("Color is:", statusColor)
+        this.statusLabel.color = new Color(statusColor)
+        // console.warn(this.statusLabel.getComponent("LocalizedLabel").key)
+        // var statusColor = this.TYPE_COLORS[parseInt(data.tx_type)-1];
+        // this.statusLabel.color = new Color(statusColor);
+        // console.log("color:", this.statusLabel.color)
+        // this.statusLabel.updateRenderData(true)
     }
 
     touchCopy(){

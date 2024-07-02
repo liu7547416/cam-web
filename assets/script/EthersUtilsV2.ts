@@ -1,4 +1,5 @@
 import { ABI } from './ABI';
+import * as i18n from 'db://i18n/LanguageData';
 
 //申请测试币：https://www.bnbchain.org/en/testnet-faucet
 const BscContract = "0x67E8cF2b76b8b4200e0d70EeF618a6d4b0572b7B"
@@ -50,7 +51,7 @@ export var EthersUtils = {
     async connectWalletV2(){
         var ethereum = window['ethereum']
         if (!ethereum) {
-            console.log("未安装 metamask?")
+            this.showPopup(i18n.t("open_in_wallet"))
             return null
         }
         // await ethereum.enable()
@@ -68,7 +69,7 @@ export var EthersUtils = {
 
     async getBalanceOfContract(contractAddress: string){
         if(!this.address){
-            return alert("address is:"+this.address)
+            return this.showPopup(i18n.t("contract_err"))
         }
         this.contract = new ethers.Contract(contractAddress, ABI.Token, EthersUtils.provider);
         var balance = await this.contract.balanceOf(this.address);
@@ -78,7 +79,7 @@ export var EthersUtils = {
     // async connectWallet(){
     //     var ethereum = window['ethereum']
     //     if (!ethereum) {
-    //         console.log("未安装 metamask?")
+    //         console.log("未安装 钱包?")
     //         return null
     //     }
     //     // await ethereum.enable()

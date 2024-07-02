@@ -1,4 +1,4 @@
-import { _decorator, Component, Label, Node, Sprite, SpriteFrame } from 'cc';
+import { _decorator, AudioSource, Component, Label, Node, Sprite, SpriteFrame } from 'cc';
 import * as i18n from 'db://i18n/LanguageData';
 
 const { ccclass, property } = _decorator;
@@ -15,6 +15,9 @@ export class show_time_sec extends Component {
     @property(Sprite)
     Number2: Sprite = null;
 
+    @property(AudioSource)
+    sound: AudioSource = null;
+
 
     @property(Label)
     text: Label = null;
@@ -26,41 +29,77 @@ export class show_time_sec extends Component {
     waitingZH = "秒后杀手入场"
     waitingEN = "Secend killer enter!"
 
+    callfunc: CallableFunction = null
+
+
     start() {
         // this.startCountdonw()
         if (i18n._language === 'en') {
             i18n.init('en');
-            this.killerComming = "杀手出现"
+            this.killerComming = "killer coming"
         } else {
             i18n.init('zh');
-            this.killerComming = "killer coming"
+            this.killerComming = "杀手出现"
         }
+        this.text.string = this.killerComming
     }
 
 
 
 
-    startCountdonw(sec: number=30) {
-        this.totalSec = sec;
-        this.schedule(this.countdonw, 1)
+    setCallback(cb: CallableFunction){
+        this.callfunc = cb
+    }
+
+
+    startCountdonw() {
+        this.sound.play()
+        this.sound.loop = true;
+        console.error("开始倒计时：", this.totalSec)
+        this.schedule(this.countdonw, 1, this.totalSec)
+    }
+
+
+    countdonw(){
+        this.totalSec = this.totalSec - 1
+        console.log("倒计时:", this.totalSec)
+        if(this.totalSec<=0){
+            this.unschedule(this.countdonw)
+            //
+            this.Number1.spriteFrame =this.numbers[ 0 ]
+            this.Number2.spriteFrame =this.numbers[ 0 ]
+            this.sound.stop()
+            // 调用外部函数获取结果
+            this.callfunc()
+        }
+        //切换图片
+        let nums = this.getOneNumber(this.totalSec)
+        this.Number1.spriteFrame =this.numbers[ nums[1] ]
+        this.Number2.spriteFrame =this.numbers[ nums[0] ]
     }
 
 
     reset(){
         this.text.string = i18n._language === 'en' ? this.waitingEN : this.waitingZH;
-        this.Number1.spriteFrame =this.numbers[ 3 ]
+        this.sound.stop()
+        this.Number1.spriteFrame =this.numbers[ 0 ]
         this.Number2.spriteFrame =this.numbers[ 0 ]
     }
 
 
-    setTimeSec(value){
+    setTimeSec(value, cb: CallableFunction){
+        console.log("开始倒计时:", value)
+        this.callfunc = cb;
+        this.totalSec = value;
         if(value<=0){
+            this.sound.stop()
             value = 0
             this.text.string = this.killerComming
             this.Number1.spriteFrame =this.numbers[ 0 ]
             this.Number2.spriteFrame =this.numbers[ 0 ]
             return
         }
+        this.startCountdonw()
         //切换图片
         let nums = this.getOneNumber(value)
         this.Number1.spriteFrame =this.numbers[ nums[1] ]
@@ -68,19 +107,7 @@ export class show_time_sec extends Component {
     }
 
 
-    countdonw(){
-        this.totalSec = this.totalSec - 1
-        if(this.totalSec<=0){
-            this.text.string = this.killerComming
-            this.Number1.spriteFrame =this.numbers[ 0 ]
-            this.Number2.spriteFrame =this.numbers[ 0 ]
-            this.unschedule(this.countdonw)
-        }
-        //切换图片
-        let nums = this.getOneNumber(this.totalSec)
-        this.Number1.spriteFrame =this.numbers[ nums[1] ]
-        this.Number2.spriteFrame =this.numbers[ nums[0] ]
-    }
+    
 
     getOneNumber(number) {
         // 个位数
@@ -91,9 +118,6 @@ export class show_time_sec extends Component {
       }
 
 
-    update(deltaTime: number) {
-        
-    }
 }
 
 

@@ -34,17 +34,17 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 68
-      },
-      {
         "__id__": 70
       },
       {
         "__id__": 72
+      },
+      {
+        "__id__": 74
       }
     ],
     "_prefab": {
-      "__id__": 74
+      "__id__": 76
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -158,7 +158,7 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 45.8349609375,
+      "x": 25.8349609375,
       "y": 0,
       "z": 0
     },
@@ -199,7 +199,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 91.669921875,
+      "width": 51.669921875,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -235,7 +235,7 @@
       "b": 143,
       "a": 255
     },
-    "_string": "钱包余额: ",
+    "_string": "数量: ",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -336,7 +336,7 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 146.6923828125,
+      "x": 106.6923828125,
       "y": 0,
       "z": 0
     },
@@ -1519,10 +1519,13 @@
       },
       {
         "__id__": 65
+      },
+      {
+        "__id__": 67
       }
     ],
     "_prefab": {
-      "__id__": 67
+      "__id__": 69
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -1567,7 +1570,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 98.9453125,
+      "width": 13.3203125,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1603,7 +1606,7 @@
       "b": 143,
       "a": 255
     },
-    "_string": "Play game",
+    "_string": "--",
     "_horizontalAlign": 2,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -1650,6 +1653,25 @@
     "fileId": "11xD9aLmZHCZxkRyTAHEFG"
   },
   {
+    "__type__": "edf98QH2D1AUoCrtQlbxFrU",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 62
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 68
+    },
+    "key": "",
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "16sQcpi2pEaJFebSp/yjdx"
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -1672,7 +1694,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 69
+      "__id__": 71
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -1700,7 +1722,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 71
+      "__id__": 73
     },
     "_customMaterial": null,
     "_srcBlendFactor": 2,
@@ -1745,7 +1767,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 73
+      "__id__": 75
     },
     "dateLabel": {
       "__id__": 54

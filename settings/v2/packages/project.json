@@ -4,11 +4,16 @@
     "designResolution": {
       "width": 750,
       "height": 1334,
-      "fitWidth": true,
-      "fitHeight": true
+      "fitHeight": false,
+      "fitWidth": true
     },
-    "highQuality": false,
-    "downloadMaxConcurrency": 30
+    "downloadMaxConcurrency": 50
   },
-  "custom_joint_texture_layouts": []
+  "custom_joint_texture_layouts": [],
+  "physics": {
+    "collisionMatrix": {
+      "0": 0
+    },
+    "defaultMaterial": ""
+  }
 }
